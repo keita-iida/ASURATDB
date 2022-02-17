@@ -1,63 +1,42 @@
-Package: ASURAT
+Package: ASURATDB
 Type: Package
-Title: Functional annotation-driven unsupervised clustering for single-cell data
-Version: 0.99.0
+Title: ASURAT database builder
+Version: 0.1.0
 Authors@R: c(person("Keita", "Iida", email = "kiida@protein.osaka-u.ac.jp",
              role = c("aut", "cre"),
              comment = c(ORCID = "0000-0002-1076-830X")),
              person("Johannes Nicolaus", "Wibisana",
                     email = "nico@protein.osaka-u.ac.jp", role = c("ctb")))
-Description: ASURAT is a software for single-cell data analysis.
-    Using ASURAT, one can simultaneously perform unsupervised clustering and
-    biological interpretation in terms of cell type, disease, biological process,
-    and signaling pathway activity. Inputting a single-cell RNA-seq data and
-    knowledge-based databases, such as Cell Ontology, Gene Ontology, KEGG, etc.,
-    ASURAT transforms gene expression tables into original multivariate tables,
-    termed sign-by-sample matrices (SSMs).
+Description: ASURATDB is a software for collecting databases used by ASURAT.
+    Using ASURATDB, one can import existing databases and create custom-built
+    databases, which can be used by ASURAT.
+    Examples include Disease Ontology, Cell Ontology, Gene Ontology, Kyoto
+    Encyclopedia of Genes and Genomes (KEGG), Molecular Signatures Database
+    (MSigDB).
 License: GPL-3 + file LICENSE
-biocViews: GeneExpression, SingleCell, Sequencing, Clustering, GeneSignaling
+biocViews: Sequencing
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: TRUE
 Depends:
     R (>= 4.0.0)
 Imports:
-    SingleCellExperiment,
-    SummarizedExperiment,
-    S4Vectors,
-    Rcpp (>= 1.0.7),
-    cluster,
     utils,
-    ggplot2,
-    plot3D,
-    ComplexHeatmap,
-    circlize,
-    grid
-Suggests:
-    dplyr,
-    bayNorm,
-    Rtsne,
-    umap,
-    destiny,
-    Seurat,
     AnnotationDbi,
     BiocGenerics,
     stringr,
-    grDevices,
-    graphics,
     org.Hs.eg.db,
     org.Mm.eg.db,
-    clusterProfiler,
     DOSE,
     DO.db,
     ontoProc,
+    clusterProfiler,
     GOSemSim,
-    KEGGREST,
-    qgraph,
+    KEGGREST
+Suggests:
+    clustermole (>= 1.1.0),
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
 RoxygenNote: 7.1.2
-LinkingTo:
-    Rcpp
 Config/testthat/edition: 3

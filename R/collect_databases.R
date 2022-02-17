@@ -638,6 +638,7 @@ do_keggGet <- function(data = NULL){
 #'
 #' @return Results from keggGet().
 #' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom stringr str_extract
 #' @export
 #'
 #' @examples
@@ -672,8 +673,9 @@ collect_KEGG <- function(organism = NULL, categories = NULL, timelag = 0.1){
       # (i) Description
       #--------------------------------------------------
       category_id <- map$ID[i]
-      if(categories[k] == "module")
-        category_id <- stringr::str_extract(category_id, "(?<=_)(.*)")
+      if(categories[k] == "module"){
+        category_id <- str_extract(category_id, "(?<=_)(.*)")
+      }
       tmp_description <- try(do_keggGet(category_id), silent = TRUE)
       if(class(tmp_description) == "try-error"){
         flags <- c(flags, i)
@@ -712,14 +714,16 @@ collect_KEGG <- function(organism = NULL, categories = NULL, timelag = 0.1){
         # (i) Description
         #------------------------------
         category_id <- map$ID[i]
-        if(categories[k] == "module")
-          category_id <- stringr::str_extract(category_id, "(?<=_)(.*)")
+        if(categories[k] == "module"){
+          category_id <- str_extract(category_id, "(?<=_)(.*)")
+        }
         tmp_description <- try(do_keggGet(category_id), silent = TRUE)
         cnt = 0
         while(class(tmp_description) == "try-error"){
           cnt <- cnt + 1
-          if(cnt >= 10)
+          if(cnt >= 10){
             break
+          }
           Sys.sleep(1)
           tmp_description <- try(do_keggGet(category_id), silent = TRUE)
         }
@@ -734,8 +738,9 @@ collect_KEGG <- function(organism = NULL, categories = NULL, timelag = 0.1){
         cnt = 0
         while(class(tmp_gene) == "try-error"){
           cnt <- cnt + 1
-          if(cnt >= 10)
+          if(cnt >= 10){
             break
+          }
           Sys.sleep(1)
           tmp_gene <- try(do_keggGet(map$KEGG_geneID[i]), silent = TRUE)
         }

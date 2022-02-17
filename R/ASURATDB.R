@@ -1,23 +1,15 @@
 #-----------------------------------------------------------------------------80
 #
 #-----------------------------------------------------------------------------80
-#' Functional annotation-driven unsupervised clustering of SingleCell data.
+#' ASURAT database builder
 #'
-#' ASURAT is a software for single-cell data analysis.
-#'    Using ASURAT, one can simultaneously perform unsupervised clustering and
-#'    biological interpretation in terms of cell type, disease, biological
-#'    process, and signaling pathway activity.
-#'    Inputting a single-cell RNA-seq data and knowledge-based databases,
-#'    such as Cell Ontology, Gene Ontology, KEGG, etc., ASURAT transforms
-#'    gene expression tables into original multivariate tables, termed
-#'    sign-by-sample matrices (SSMs).
+#' ASURATDB is a software for collecting databases used by ASURAT.
+#'    Using ASURATDB, one can import existing databases and create custom-built
+#'    databases, which can be used by ASURAT. Examples include Disease Ontology,
+#'    Cell Ontology, Gene Ontology, Kyoto Encyclopedia of Genes and Genomes
+#'    (KEGG), Molecular Signatures Database (MSigDB).
 #'
 #' @docType package
-#' @name ASURAT
+#' @name ASURATDB
 NULL
-#-----------------------------------------------------------------------------80
-#
-#-----------------------------------------------------------------------------80
-#' @useDynLib ASURAT
-#' @importFrom Rcpp sourceCpp
-NULL
+
