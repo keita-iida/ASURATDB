@@ -1,8 +1,9 @@
 # ASURAT database
 ## Brief introduction
-* Knowledge-based databases collected by ASURAT are stored in /genes2bioterm.
-  One can import them using ASURATDB functions.
-* SingleCell transcriptome data processed by ASURAT are stored in transcriptome.
+* Existing knowledge-based databases collected by ASURATDB are stored in
+  genes2bioterm/.
+* SingleCell transcriptome data processed by ASURAT are stored in
+  transcriptome/.
 
 ## Vignettes
 Well-documented vignette is available from the following URL:
