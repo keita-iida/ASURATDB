@@ -11,7 +11,7 @@
 
 <meta name="author" content="Keita Iida" />
 
-<meta name="date" content="2022-02-24" />
+<meta name="date" content="2022-03-04" />
 
 <title>ASURATDB</title>
 
@@ -243,7 +243,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">ASURATDB</h1>
 <h4 class="author">Keita Iida</h4>
-<h4 class="date">2022-02-24</h4>
+<h4 class="date">2022-03-04</h4>
 
 </div>
 
@@ -373,10 +373,57 @@ human_MSig &lt;- list(cell = res)</code></pre>
 </ul>
 <p><br></p>
 </div>
-<div id="create-a-custom-built-database" class="section level1" number="7">
-<h1 number="7"><span class="header-section-number">7</span> Create a custom-built database</h1>
-<div id="combine-co-and-msigdb-for-human-cells" class="section level2" number="7.1">
-<h2 number="7.1"><span class="header-section-number">7.1</span> Combine CO and MSigDB for human cells</h2>
+<div id="collect-cellmarker-for-human-cells" class="section level1" number="7">
+<h1 number="7"><span class="header-section-number">7</span> Collect CellMarker for human cells</h1>
+<p>Load databases.</p>
+<pre class="r"><code>dbtable &lt;- clustermole::clustermole_markers()</code></pre>
+<pre class="r"><code>sort(unique(dbtable$db))</code></pre>
+<pre><code>[1] &quot;ARCHS4&quot;     &quot;CellMarker&quot; &quot;MSigDB&quot;     &quot;PanglaoDB&quot;  &quot;SaVanT&quot;     &quot;TISSUES&quot;   
+[7] &quot;xCell&quot;</code></pre>
+<p>Select species and databases.</p>
+<pre class="r"><code>dbtable &lt;- dbtable[which(dbtable$species == &quot;Human&quot;), ]
+dbtable &lt;- dbtable[which(dbtable$db == &quot;CellMarker&quot;),]
+dbtable$geneID &lt;- NA</code></pre>
+<p>Change gene symbols into entrez IDs.</p>
+<pre class="r"><code>dictionary &lt;- AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db,
+                                    key = dbtable$gene_original,
+                                    columns = c(&quot;SYMBOL&quot;, &quot;ENTREZID&quot;),
+                                    keytype = &quot;SYMBOL&quot;)
+dictionary &lt;- dictionary[!duplicated(dictionary$SYMBOL), ]
+dictionary &lt;- dictionary[which(!is.na(dictionary$SYMBOL)),]
+for(i in 1:nrow(dbtable)){
+  gene &lt;- dbtable$gene_original[i]
+  inds &lt;- which(dictionary$SYMBOL == gene)
+  dbtable$geneID[i] &lt;- dictionary[inds,]$ENTREZID
+}</code></pre>
+<p>Reformat the database. Here, the identifier of each biological term are named “MSigID.”</p>
+<pre class="r"><code>dbtable_geneID &lt;- split(x = dbtable$geneID, f = dbtable$celltype)
+dbtable_symbol &lt;- split(x = dbtable$gene_original, f = dbtable$celltype)
+stopifnot(identical(length(dbtable_geneID), length(dbtable_symbol)))
+
+res &lt;- c(&quot;ID&quot;, &quot;Description&quot;, &quot;Count&quot;, &quot;Gene&quot;, &quot;GeneID&quot;, &quot;IC&quot;)
+res &lt;- data.frame(matrix(ncol = 6, nrow = 0, dimnames = list(NULL, res)))
+for(i in 1:length(dbtable_geneID)){
+  res &lt;- rbind(res, data.frame(
+    ID = paste(&quot;CellID:&quot;, i, sep = &quot;&quot;),
+    Description = names(dbtable_geneID)[i],
+    IC = NA,
+    Count = length(dbtable_geneID[[i]]),
+    Gene = paste(dbtable_symbol[[i]], collapse = &quot;/&quot;),
+    GeneID = paste(dbtable_geneID[[i]], collapse = &quot;/&quot;)))
+}
+human_CellMarker &lt;- list(cell = res)</code></pre>
+<p>The data were stored in the following repositories:</p>
+<ul>
+<li><a href="https://figshare.com/s/0599d2de970c2deb675c">DOI:10.6084/m9.figshare.19102598</a></li>
+<li><a href="https://github.com/keita-iida/ASURATDB">Github ASURATDB</a></li>
+</ul>
+<p><br></p>
+</div>
+<div id="create-a-custom-built-database" class="section level1" number="8">
+<h1 number="8"><span class="header-section-number">8</span> Create a custom-built database</h1>
+<div id="combine-co-and-msigdb-for-human-cells" class="section level2" number="8.1">
+<h2 number="8.1"><span class="header-section-number">8.1</span> Combine CO and MSigDB for human cells</h2>
 <p>Create a cell type-related database by combining Cell ontology and MSigDB databases for analyzing human single-cell transcriptome data.</p>
 <pre class="r"><code>urlpath &lt;- &quot;https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/&quot;
 load(url(paste0(urlpath, &quot;20201213_human_CO.rda?raw=true&quot;)))
@@ -391,8 +438,8 @@ human_COMSig &lt;- list(cell = res)</code></pre>
 </ul>
 <p><br></p>
 </div>
-<div id="combine-do-co-and-msigdb-for-human-cells" class="section level2" number="7.2">
-<h2 number="7.2"><span class="header-section-number">7.2</span> Combine DO, CO, and MSigDB for human cells</h2>
+<div id="combine-do-co-and-msigdb-for-human-cells" class="section level2" number="8.2">
+<h2 number="8.2"><span class="header-section-number">8.2</span> Combine DO, CO, and MSigDB for human cells</h2>
 <p>Create a cell type-related database by combining Disease Ontology, Cell ontology and MSigDB databases for analyzing complex human single-cell transcriptome data.</p>
 <pre class="r"><code>urlpath &lt;- &quot;https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/&quot;
 load(url(paste0(urlpath, &quot;20201213_human_DO.rda?raw=true&quot;)))
@@ -409,8 +456,8 @@ human_DOCOMSig &lt;- list(cell = res)</code></pre>
 <p><br></p>
 </div>
 </div>
-<div id="session-information" class="section level1" number="8">
-<h1 number="8"><span class="header-section-number">8</span> Session information</h1>
+<div id="session-information" class="section level1" number="9">
+<h1 number="9"><span class="header-section-number">9</span> Session information</h1>
 <pre class="r"><code>sessionInfo()
 #&gt; R version 4.0.4 (2021-02-15)
 #&gt; Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -427,7 +474,7 @@ human_DOCOMSig &lt;- list(cell = res)</code></pre>
 #&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
 #&gt; 
 #&gt; other attached packages:
-#&gt; [1] ASURATDB_0.0.1
+#&gt; [1] ASURATDB_0.1.0
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
 #&gt;  [1] digest_0.6.28   R6_2.5.1        jsonlite_1.7.2  magrittr_2.0.1 
