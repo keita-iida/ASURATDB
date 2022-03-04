@@ -201,6 +201,71 @@ The data were stored in the following repositories:
 
 <br>
 
+# Collect CellMarker for human cells
+Load databases.
+```{r, eval = FALSE}
+dbtable <- clustermole::clustermole_markers()
+```
+
+```{r, eval = FALSE}
+sort(unique(dbtable$db))
+```
+```
+[1] "ARCHS4"     "CellMarker" "MSigDB"     "PanglaoDB"  "SaVanT"     "TISSUES"   
+[7] "xCell"
+```
+
+Select species and databases.
+```{r, eval = FALSE}
+dbtable <- dbtable[which(dbtable$species == "Human"), ]
+dbtable <- dbtable[which(dbtable$db == "CellMarker"),]
+dbtable$geneID <- NA
+```
+
+Change gene symbols into entrez IDs.
+```{r, eval = FALSE}
+dictionary <- AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db,
+                                    key = dbtable$gene_original,
+                                    columns = c("SYMBOL", "ENTREZID"),
+                                    keytype = "SYMBOL")
+dictionary <- dictionary[!duplicated(dictionary$SYMBOL), ]
+dictionary <- dictionary[which(!is.na(dictionary$SYMBOL)),]
+for(i in 1:nrow(dbtable)){
+  gene <- dbtable$gene_original[i]
+  inds <- which(dictionary$SYMBOL == gene)
+  dbtable$geneID[i] <- dictionary[inds,]$ENTREZID
+}
+```
+
+Reformat the database.
+Here, the identifier of each biological term are named "MSigID."
+```{r, eval = FALSE}
+dbtable_geneID <- split(x = dbtable$geneID, f = dbtable$celltype)
+dbtable_symbol <- split(x = dbtable$gene_original, f = dbtable$celltype)
+stopifnot(identical(length(dbtable_geneID), length(dbtable_symbol)))
+
+res <- c("ID", "Description", "Count", "Gene", "GeneID", "IC")
+res <- data.frame(matrix(ncol = 6, nrow = 0, dimnames = list(NULL, res)))
+for(i in 1:length(dbtable_geneID)){
+  res <- rbind(res, data.frame(
+    ID = paste("CellID:", i, sep = ""),
+    Description = names(dbtable_geneID)[i],
+    IC = NA,
+    Count = length(dbtable_geneID[[i]]),
+    Gene = paste(dbtable_symbol[[i]], collapse = "/"),
+    GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
+}
+human_CellMarker <- list(cell = res)
+```
+The data were stored in the following repositories:
+
+* [DOI:10.6084/m9.figshare.19102598](https://figshare.com/s/0599d2de970c2deb675c)
+* [Github ASURATDB](https://github.com/keita-iida/ASURATDB)
+
+
+
+<br>
+
 # Create a custom-built database
 ## Combine CO and MSigDB for human cells
 Create a cell type-related database by combining Cell ontology and
