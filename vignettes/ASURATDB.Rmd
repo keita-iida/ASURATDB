@@ -287,6 +287,24 @@ The data were stored in the following repositories:
 
 <br>
 
+## Combine CO, MSigDB, and CellMarker for human cells
+Create a cell type-related database by combining Cell ontology, MSigDB, and
+CellMarker databases for analyzing human single-cell transcriptome data.
+```{r, eval = FALSE}
+urlpath <- "https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/"
+load(url(paste0(urlpath, "20201213_human_CO.rda?raw=true")))
+load(url(paste0(urlpath, "20220108_human_MSig.rda?raw=true")))
+load(url(paste0(urlpath, "20220304_human_CellMarker.rda?raw=true")))
+res <- do.call("rbind", list(human_CO[["cell"]], human_MSig[["cell"]],
+                             human_CellMarker[["cell"]]))
+res$IC <- NA
+human_COMSigCellMarker <- list(cell = res)
+```
+
+
+
+<br>
+
 ## Combine DO, CO, and MSigDB for human cells
 Create a cell type-related database by combining Disease Ontology,
 Cell ontology and MSigDB databases for analyzing complex human single-cell
@@ -296,14 +314,31 @@ urlpath <- "https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/"
 load(url(paste0(urlpath, "20201213_human_DO.rda?raw=true")))
 load(url(paste0(urlpath, "20201213_human_CO.rda?raw=true")))
 load(url(paste0(urlpath, "20220108_human_MSig.rda?raw=true")))
-res <- rbind(human_DO[["disease"]], rbind(human_CO[["cell"]], human_MSig[["cell"]]))
+res <- do.call("rbind", list(human_DO[["disease"]], human_CO[["cell"]],
+                             human_MSig[["cell"]]))
 res$IC <- NA
 human_DOCOMSig <- list(cell = res)
 ```
-The data were stored in the following repositories:
 
-* [DOI:10.6084/m9.figshare.19102598](https://figshare.com/s/0599d2de970c2deb675c)
-* [Github ASURATDB](https://github.com/keita-iida/ASURATDB)
+
+
+<br>
+
+## Combine DO, CO, MSigDB, and CellMarker for human cells
+Create a cell type-related database by combining Disease Ontology,
+Cell ontology, MSigDB, and CellMarker databases for analyzing complex human
+single-cell transcriptome data.
+```{r, eval = FALSE}
+urlpath <- "https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/"
+load(url(paste0(urlpath, "20201213_human_DO.rda?raw=true")))
+load(url(paste0(urlpath, "20201213_human_CO.rda?raw=true")))
+load(url(paste0(urlpath, "20220108_human_MSig.rda?raw=true")))
+load(url(paste0(urlpath, "20220304_human_CellMarker.rda?raw=true")))
+res <- do.call("rbind", list(human_DO[["disease"]], human_CO[["cell"]],
+                             human_MSig[["cell"]], human_CellMarker[["cell"]]))
+res$IC <- NA
+human_DOCOMSigCellMarker <- list(cell = res)
+```
 
 
 
