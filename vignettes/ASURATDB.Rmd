@@ -248,7 +248,7 @@ res <- c("ID", "Description", "Count", "Gene", "GeneID", "IC")
 res <- data.frame(matrix(ncol = 6, nrow = 0, dimnames = list(NULL, res)))
 for(i in 1:length(dbtable_geneID)){
   res <- rbind(res, data.frame(
-    ID = paste("CellID:", i, sep = ""),
+    ID = paste("CellMarkerID:", i, sep = ""),
     Description = names(dbtable_geneID)[i],
     IC = NA,
     Count = length(dbtable_geneID[[i]]),
