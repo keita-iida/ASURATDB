@@ -183,14 +183,14 @@ res <- c("ID", "Description", "Count", "Gene", "GeneID", "IC")
 res <- data.frame(matrix(ncol = 6, nrow = 0, dimnames = list(NULL, res)))
 for(i in 1:length(dbtable_geneID)){
   res <- rbind(res, data.frame(
-    ID = paste("MSigID:", i, sep = ""),
+    ID = paste("MSigDBID:", i, sep = ""),
     Description = names(dbtable_geneID)[i],
     IC = NA,
     Count = length(dbtable_geneID[[i]]),
     Gene = paste(dbtable_symbol[[i]], collapse = "/"),
     GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
 }
-human_MSig <- list(cell = res)
+human_MSigDB <- list(cell = res)
 ```
 The data were stored in the following repositories:
 
