@@ -273,9 +273,8 @@ MSigDB databases for analyzing human single-cell transcriptome data.
 ```{r, eval = FALSE}
 urlpath <- "https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/"
 load(url(paste0(urlpath, "20201213_human_CO.rda?raw=true")))
-load(url(paste0(urlpath, "20220108_human_MSig.rda?raw=true")))
-res <- rbind(human_CO[["cell"]], human_MSig[["cell"]])
-res$IC <- NA
+load(url(paste0(urlpath, "20220308_human_MSigDB.rda?raw=true")))
+res <- rbind(human_CO[["cell"]], human_MSigDB[["cell"]])
 human_COMSig <- list(cell = res)
 ```
 The data were stored in the following repositories:
@@ -293,12 +292,11 @@ CellMarker databases for analyzing human single-cell transcriptome data.
 ```{r, eval = FALSE}
 urlpath <- "https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/"
 load(url(paste0(urlpath, "20201213_human_CO.rda?raw=true")))
-load(url(paste0(urlpath, "20220108_human_MSig.rda?raw=true")))
+load(url(paste0(urlpath, "20220308_human_MSigDB.rda?raw=true")))
 load(url(paste0(urlpath, "20220304_human_CellMarker.rda?raw=true")))
-res <- do.call("rbind", list(human_CO[["cell"]], human_MSig[["cell"]],
+res <- do.call("rbind", list(human_CO[["cell"]], human_MSigDB[["cell"]],
                              human_CellMarker[["cell"]]))
-res$IC <- NA
-human_COMSigCellMarker <- list(cell = res)
+human_CB <- list(cell = res)
 ```
 
 
@@ -313,11 +311,10 @@ transcriptome data.
 urlpath <- "https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/"
 load(url(paste0(urlpath, "20201213_human_DO.rda?raw=true")))
 load(url(paste0(urlpath, "20201213_human_CO.rda?raw=true")))
-load(url(paste0(urlpath, "20220108_human_MSig.rda?raw=true")))
+load(url(paste0(urlpath, "20220308_human_MSigDB.rda?raw=true")))
 res <- do.call("rbind", list(human_DO[["disease"]], human_CO[["cell"]],
-                             human_MSig[["cell"]]))
-res$IC <- NA
-human_DOCOMSig <- list(cell = res)
+                             human_MSigDB[["cell"]]))
+human_CB <- list(cell = res)
 ```
 
 
@@ -332,12 +329,11 @@ single-cell transcriptome data.
 urlpath <- "https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/"
 load(url(paste0(urlpath, "20201213_human_DO.rda?raw=true")))
 load(url(paste0(urlpath, "20201213_human_CO.rda?raw=true")))
-load(url(paste0(urlpath, "20220108_human_MSig.rda?raw=true")))
+load(url(paste0(urlpath, "20220308_human_MSigDB.rda?raw=true")))
 load(url(paste0(urlpath, "20220304_human_CellMarker.rda?raw=true")))
 res <- do.call("rbind", list(human_DO[["disease"]], human_CO[["cell"]],
-                             human_MSig[["cell"]], human_CellMarker[["cell"]]))
-res$IC <- NA
-human_DOCOMSigCellMarker <- list(cell = res)
+                             human_MSigDB[["cell"]], human_CellMarker[["cell"]]))
+human_CB <- list(cell = res)
 ```
 
 
