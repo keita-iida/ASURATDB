@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 # Installations
 Attach necessary libraries:
-```{r, message = FALSE, warning = FALSE}
+```{r, eval = FALSE}
 library(ASURATDB)
 ```
 
