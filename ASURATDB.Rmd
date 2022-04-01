@@ -275,7 +275,7 @@ urlpath <- "https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/"
 load(url(paste0(urlpath, "20201213_human_CO.rda?raw=true")))
 load(url(paste0(urlpath, "20220308_human_MSigDB.rda?raw=true")))
 res <- rbind(human_CO[["cell"]], human_MSigDB[["cell"]])
-human_COMSig <- list(cell = res)
+human_CB <- list(cell = res)
 ```
 The data were stored in the following repositories:
 
