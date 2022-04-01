@@ -173,7 +173,7 @@ for(i in 1:nrow(dbtable)){
 ```
 
 Reformat the database.
-Here, the identifier of each biological term are named "MSigID."
+Here, the identifier of each biological term are named "MSigDBID."
 ```{r, eval = FALSE}
 dbtable_geneID <- split(x = dbtable$geneID, f = dbtable$celltype)
 dbtable_symbol <- split(x = dbtable$gene_original, f = dbtable$celltype)
@@ -238,7 +238,7 @@ for(i in 1:nrow(dbtable)){
 ```
 
 Reformat the database.
-Here, the identifier of each biological term are named "MSigID."
+Here, the identifier of each biological term are named "CellMarkerID."
 ```{r, eval = FALSE}
 dbtable_geneID <- split(x = dbtable$geneID, f = dbtable$celltype)
 dbtable_symbol <- split(x = dbtable$gene_original, f = dbtable$celltype)

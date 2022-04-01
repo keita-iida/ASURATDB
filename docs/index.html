@@ -349,7 +349,7 @@ for(i in 1:nrow(dbtable)){
   inds &lt;- which(dictionary$SYMBOL == gene)
   dbtable$geneID[i] &lt;- dictionary[inds,]$ENTREZID
 }</code></pre>
-<p>Reformat the database. Here, the identifier of each biological term are named “MSigID.”</p>
+<p>Reformat the database. Here, the identifier of each biological term are named “MSigDBID.”</p>
 <pre class="r"><code>dbtable_geneID &lt;- split(x = dbtable$geneID, f = dbtable$celltype)
 dbtable_symbol &lt;- split(x = dbtable$gene_original, f = dbtable$celltype)
 stopifnot(identical(length(dbtable_geneID), length(dbtable_symbol)))
@@ -396,7 +396,7 @@ for(i in 1:nrow(dbtable)){
   inds &lt;- which(dictionary$SYMBOL == gene)
   dbtable$geneID[i] &lt;- dictionary[inds,]$ENTREZID
 }</code></pre>
-<p>Reformat the database. Here, the identifier of each biological term are named “MSigID.”</p>
+<p>Reformat the database. Here, the identifier of each biological term are named “CellMarkerID.”</p>
 <pre class="r"><code>dbtable_geneID &lt;- split(x = dbtable$geneID, f = dbtable$celltype)
 dbtable_symbol &lt;- split(x = dbtable$gene_original, f = dbtable$celltype)
 stopifnot(identical(length(dbtable_geneID), length(dbtable_symbol)))
@@ -427,9 +427,8 @@ human_CellMarker &lt;- list(cell = res)</code></pre>
 <p>Create a cell type-related database by combining Cell ontology and MSigDB databases for analyzing human single-cell transcriptome data.</p>
 <pre class="r"><code>urlpath &lt;- &quot;https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/&quot;
 load(url(paste0(urlpath, &quot;20201213_human_CO.rda?raw=true&quot;)))
-load(url(paste0(urlpath, &quot;20220108_human_MSig.rda?raw=true&quot;)))
-res &lt;- rbind(human_CO[[&quot;cell&quot;]], human_MSig[[&quot;cell&quot;]])
-res$IC &lt;- NA
+load(url(paste0(urlpath, &quot;20220308_human_MSigDB.rda?raw=true&quot;)))
+res &lt;- rbind(human_CO[[&quot;cell&quot;]], human_MSigDB[[&quot;cell&quot;]])
 human_COMSig &lt;- list(cell = res)</code></pre>
 <p>The data were stored in the following repositories:</p>
 <ul>
@@ -443,12 +442,11 @@ human_COMSig &lt;- list(cell = res)</code></pre>
 <p>Create a cell type-related database by combining Cell ontology, MSigDB, and CellMarker databases for analyzing human single-cell transcriptome data.</p>
 <pre class="r"><code>urlpath &lt;- &quot;https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/&quot;
 load(url(paste0(urlpath, &quot;20201213_human_CO.rda?raw=true&quot;)))
-load(url(paste0(urlpath, &quot;20220108_human_MSig.rda?raw=true&quot;)))
+load(url(paste0(urlpath, &quot;20220308_human_MSigDB.rda?raw=true&quot;)))
 load(url(paste0(urlpath, &quot;20220304_human_CellMarker.rda?raw=true&quot;)))
-res &lt;- do.call(&quot;rbind&quot;, list(human_CO[[&quot;cell&quot;]], human_MSig[[&quot;cell&quot;]],
+res &lt;- do.call(&quot;rbind&quot;, list(human_CO[[&quot;cell&quot;]], human_MSigDB[[&quot;cell&quot;]],
                              human_CellMarker[[&quot;cell&quot;]]))
-res$IC &lt;- NA
-human_COMSigCellMarker &lt;- list(cell = res)</code></pre>
+human_CB &lt;- list(cell = res)</code></pre>
 <p><br></p>
 </div>
 <div id="combine-do-co-and-msigdb-for-human-cells" class="section level2" number="8.3">
@@ -457,11 +455,10 @@ human_COMSigCellMarker &lt;- list(cell = res)</code></pre>
 <pre class="r"><code>urlpath &lt;- &quot;https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/&quot;
 load(url(paste0(urlpath, &quot;20201213_human_DO.rda?raw=true&quot;)))
 load(url(paste0(urlpath, &quot;20201213_human_CO.rda?raw=true&quot;)))
-load(url(paste0(urlpath, &quot;20220108_human_MSig.rda?raw=true&quot;)))
+load(url(paste0(urlpath, &quot;20220308_human_MSigDB.rda?raw=true&quot;)))
 res &lt;- do.call(&quot;rbind&quot;, list(human_DO[[&quot;disease&quot;]], human_CO[[&quot;cell&quot;]],
-                             human_MSig[[&quot;cell&quot;]]))
-res$IC &lt;- NA
-human_DOCOMSig &lt;- list(cell = res)</code></pre>
+                             human_MSigDB[[&quot;cell&quot;]]))
+human_CB &lt;- list(cell = res)</code></pre>
 <p><br></p>
 </div>
 <div id="combine-do-co-msigdb-and-cellmarker-for-human-cells" class="section level2" number="8.4">
@@ -470,12 +467,11 @@ human_DOCOMSig &lt;- list(cell = res)</code></pre>
 <pre class="r"><code>urlpath &lt;- &quot;https://github.com/keita-iida/ASURATDB/blob/main/genes2bioterm/&quot;
 load(url(paste0(urlpath, &quot;20201213_human_DO.rda?raw=true&quot;)))
 load(url(paste0(urlpath, &quot;20201213_human_CO.rda?raw=true&quot;)))
-load(url(paste0(urlpath, &quot;20220108_human_MSig.rda?raw=true&quot;)))
+load(url(paste0(urlpath, &quot;20220308_human_MSigDB.rda?raw=true&quot;)))
 load(url(paste0(urlpath, &quot;20220304_human_CellMarker.rda?raw=true&quot;)))
 res &lt;- do.call(&quot;rbind&quot;, list(human_DO[[&quot;disease&quot;]], human_CO[[&quot;cell&quot;]],
-                             human_MSig[[&quot;cell&quot;]], human_CellMarker[[&quot;cell&quot;]]))
-res$IC &lt;- NA
-human_DOCOMSigCellMarker &lt;- list(cell = res)</code></pre>
+                             human_MSigDB[[&quot;cell&quot;]], human_CellMarker[[&quot;cell&quot;]]))
+human_CB &lt;- list(cell = res)</code></pre>
 <p><br></p>
 </div>
 </div>
