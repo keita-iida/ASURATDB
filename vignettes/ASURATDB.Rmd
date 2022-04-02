@@ -91,10 +91,26 @@ Currently, only human and mouse data are acceptable.
 # Human
 dict_GO <- collect_GO(orgdb = org.Hs.eg.db::org.Hs.eg.db)
 human_GO <- format_GO(dict = dict_GO, orgdb = org.Hs.eg.db::org.Hs.eg.db)
+# Human reduced
+human_GO_red <- human_GO
+onts <- c("MF", "BP", "CC")
+for(i in seq_along(onts)){
+  ids <- human_GO[[onts[i]]][which(human_GO[[onts[i]]]$Count >= 2), ]$ID
+  mat <- human_GO$similarity_matrix[[onts[i]]][ids, ids]
+  human_GO_red$similarity_matrix[[onts[i]]] <- mat
+}
 
 # Mouse
 dict_GO <- collect_GO(orgdb = org.Mm.eg.db::org.Mm.eg.db)
 mouse_GO <- format_GO(dict = dict_GO, orgdb = org.Mm.eg.db::org.Mm.eg.db)
+# Mouse reduced
+mouse_GO_red <- mouse_GO
+onts <- c("MF", "BP", "CC")
+for(i in seq_along(onts)){
+  ids <- mouse_GO[[onts[i]]][which(mouse_GO[[onts[i]]]$Count >= 2), ]$ID
+  mat <- mouse_GO$similarity_matrix[[onts[i]]][ids, ids]
+  mouse_GO_red$similarity_matrix[[onts[i]]] <- mat
+}
 ```
 The data were stored in the following repositories:
 
