@@ -1,4 +1,4 @@
-# ASURAT database
+# ASURATDB
 ## Brief introduction
 ASURATDB is a computational pipeline for collecting and reformatting knowledge-based databases.
 The collected databases are stored in genes2bioterm/.
