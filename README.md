@@ -1,20 +1,30 @@
 # ASURATDB
-## Brief introduction
-ASURATDB is a computational pipeline for collecting and reformatting knowledge-based databases.
+ASURATDB is a computational pipeline for collecting and reformatting databases for functional annotation of genes.
 The collected databases are stored in genes2bioterm/.
 
+
+
 ## Vignettes
-Well-documented vignette is available from the following URL:
+Below is a document for collecting and reformatting databases for functional annotation of genes.
 
 * https://keita-iida.github.io/ASURATDB/
+
+
 
 ## Installation
 One can install ASURATDB by the following code:
 
-```{r}
+```r
 devtools::install_github("keita-iida/ASURATDB", upgrade = "never")
 ```
 
+
+
 ## License
 [GPL-3](https://github.com/keita-iida/ASURATDB/blob/main/LICENSE)
+
+
+
+## Citation
+To be appeared. [Link](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btac541/665568
 
