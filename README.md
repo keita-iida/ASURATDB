@@ -26,5 +26,5 @@ devtools::install_github("keita-iida/ASURATDB", upgrade = "never")
 
 
 ## Citation
-To be appeared. [Link](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btac541/665568
+To be appeared. [Link](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btac541/6655687?guestAccessKey=af2587b1-5938-43f1-a25d-4feb5426ab55)
 
