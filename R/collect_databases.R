@@ -708,8 +708,10 @@ collect_KEGG <- function(organism = NULL, categories = NULL, timelag = 0.1){
     # Rescue the failures.
     #--------------------------------------------------
     if(length(flags) > 0){
+      pb <- txtProgressBar(min = 0, max = I, style = 3, width = 50, char = "=")
       failure <- c()
       for(i in flags){
+        setTxtProgressBar(pb, i)
         #------------------------------
         # (i) Description
         #------------------------------
@@ -761,6 +763,8 @@ collect_KEGG <- function(organism = NULL, categories = NULL, timelag = 0.1){
         id <- gsub("NCBI-GeneID: ", "", id)
         map$NCBI_geneID[i] <- id
       }
+      close(pb)
+
       res[[categories[k]]][["success"]] <- map
       tmp <- data.frame(
         matrix(ncol = 2, nrow = 0, dimnames = list(NULL, c(
@@ -812,8 +816,8 @@ format_KEGG <- function(dict = NULL, orgdb = NULL){
   for(k in seq_len(length(categories))){
     tmp <- dict[[categories[k]]]
     map <- unique(data.frame(
-      ID = tmp[["ID"]],
-      Description = tmp[["Description"]],
+      ID = as.character(tmp[["ID"]]),
+      Description = as.character(tmp[["Description"]]),
       IC = NA,
       Count = NA,
       Gene = NA,
