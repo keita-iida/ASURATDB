@@ -8,6 +8,10 @@ output:
     toc_depth: 2
     number_section: true
     toc_float: TRUE
+  # rmarkdown::github_document:
+  #   toc: true
+  #   toc_depth: 2
+  #   number_section: true
 vignette: >
   %\VignetteIndexEntry{ASURATDB}
   %\VignetteEngine{knitr::rmarkdown}

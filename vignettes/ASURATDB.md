@@ -1,32 +1,44 @@
 ASURATDB
 ================
 Keita Iida
-2022-05-11
+2022-11-04
 
--   [1 Installations](#1-installations)
--   [2 Collect Disease Ontology database for human
-    cells](#2-collect-disease-ontology-database-for-human-cells)
--   [3 Collect Cell Ontology database for human and mouse
-    cells](#3-collect-cell-ontology-database-for-human-and-mouse-cells)
--   [4 Collect Gene Ontology database for human and mouse
-    cells](#4-collect-gene-ontology-database-for-human-and-mouse-cells)
--   [5 Collect KEGG database for human and mouse
-    cells](#5-collect-kegg-database-for-human-and-mouse-cells)
--   [6 Collect MSigDB for human
-    cells](#6-collect-msigdb-for-human-cells)
--   [7 Collect CellMarker for human
-    cells](#7-collect-cellmarker-for-human-cells)
--   [8 Create a custom-built
-    database](#8-create-a-custom-built-database)
-    -   [8.1 Combine CO and MSigDB for human
-        cells](#81-combine-co-and-msigdb-for-human-cells)
-    -   [8.2 Combine CO, MSigDB, and CellMarker for human
-        cells](#82-combine-co-msigdb-and-cellmarker-for-human-cells)
-    -   [8.3 Combine DO, CO, and MSigDB for human
-        cells](#83-combine-do-co-and-msigdb-for-human-cells)
-    -   [8.4 Combine DO, CO, MSigDB, and CellMarker for human
-        cells](#84-combine-do-co-msigdb-and-cellmarker-for-human-cells)
--   [9 Session information](#9-session-information)
+-   <a href="#1-installations" id="toc-1-installations">1 Installations</a>
+-   <a href="#2-collect-disease-ontology-database-for-human-cells"
+    id="toc-2-collect-disease-ontology-database-for-human-cells">2 Collect
+    Disease Ontology database for human cells</a>
+-   <a href="#3-collect-cell-ontology-database-for-human-and-mouse-cells"
+    id="toc-3-collect-cell-ontology-database-for-human-and-mouse-cells">3
+    Collect Cell Ontology database for human and mouse cells</a>
+-   <a href="#4-collect-gene-ontology-database-for-human-and-mouse-cells"
+    id="toc-4-collect-gene-ontology-database-for-human-and-mouse-cells">4
+    Collect Gene Ontology database for human and mouse cells</a>
+-   <a href="#5-collect-kegg-database-for-human-and-mouse-cells"
+    id="toc-5-collect-kegg-database-for-human-and-mouse-cells">5 Collect
+    KEGG database for human and mouse cells</a>
+-   <a href="#6-collect-msigdb-for-human-cells"
+    id="toc-6-collect-msigdb-for-human-cells">6 Collect MSigDB for human
+    cells</a>
+-   <a href="#7-collect-cellmarker-for-human-cells"
+    id="toc-7-collect-cellmarker-for-human-cells">7 Collect CellMarker for
+    human cells</a>
+-   <a href="#8-create-a-custom-built-database"
+    id="toc-8-create-a-custom-built-database">8 Create a custom-built
+    database</a>
+    -   <a href="#81-combine-co-and-msigdb-for-human-cells"
+        id="toc-81-combine-co-and-msigdb-for-human-cells">8.1 Combine CO and
+        MSigDB for human cells</a>
+    -   <a href="#82-combine-co-msigdb-and-cellmarker-for-human-cells"
+        id="toc-82-combine-co-msigdb-and-cellmarker-for-human-cells">8.2 Combine
+        CO, MSigDB, and CellMarker for human cells</a>
+    -   <a href="#83-combine-do-co-and-msigdb-for-human-cells"
+        id="toc-83-combine-do-co-and-msigdb-for-human-cells">8.3 Combine DO, CO,
+        and MSigDB for human cells</a>
+    -   <a href="#84-combine-do-co-msigdb-and-cellmarker-for-human-cells"
+        id="toc-84-combine-do-co-msigdb-and-cellmarker-for-human-cells">8.4
+        Combine DO, CO, MSigDB, and CellMarker for human cells</a>
+-   <a href="#9-session-information" id="toc-9-session-information">9
+    Session information</a>
 
 # 1 Installations
 
@@ -136,9 +148,9 @@ database, respectively.
 
 The arguments of `collect_KEGG()` are `organism` and `categories`. Here,
 `organism` must obey the naming rule of
-[KEGG](http://rest.kegg.jp/list/organism) and `categories` must be one
-of `"pathway"` and `"module"` in the current version (see `KEGGREST`
-function `listDatabases()`).
+[KEGG](http://rest.kegg.jp/list/organism) (see `KEGGREST` function
+`listDatabases()`) and `categories` must be one of `"pathway"`,
+`"module"`, and `"drug"` (only for human) in the current version.
 
 ``` r
 # Human
@@ -150,6 +162,13 @@ human_KEGG <- format_KEGG(dict = list(pathway = dict_KEGG[["pathway"]][["success
 dict_KEGG <- collect_KEGG(organism = "mmu", categories = c("pathway"))
 mouse_KEGG <- format_KEGG(dict = list(pathway = dict_KEGG[["pathway"]][["success"]]),
                           orgdb = org.Mm.eg.db::org.Mm.eg.db)
+
+# Human (additional)
+dict_KEGG_drug <- collect_KEGG(organism = "hsa", categories = c("drug"))
+human_KEGG_drug <- format_KEGG(dict = list(drug = dict_KEGG_drug[["drug"]][["success"]]),
+                               orgdb = org.Hs.eg.db::org.Hs.eg.db)
+# Save data.
+# save(human_KEGG_drug, file = "genes2bioterm/20221102_human_KEGG_drug.rda")
 ```
 
 Note `collect_KEGG()` uses `KEGGREST` function `keggGet()`, which may
@@ -378,13 +397,13 @@ human_CB <- list(cell = res)
 
 ``` r
 sessionInfo()
-#> R version 4.0.4 (2021-02-15)
+#> R version 4.2.1 (2022-06-23)
 #> Platform: x86_64-apple-darwin17.0 (64-bit)
-#> Running under: macOS Big Sur 10.16
+#> Running under: macOS Big Sur ... 10.16
 #> 
 #> Matrix products: default
-#> BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
-#> LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
+#> BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
+#> LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
 #> 
 #> locale:
 #> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -393,8 +412,8 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] compiler_4.0.4  magrittr_2.0.3  fastmap_1.1.0   cli_3.2.0      
-#>  [5] tools_4.0.4     htmltools_0.5.2 rstudioapi_0.13 yaml_2.3.5     
-#>  [9] stringi_1.7.6   rmarkdown_2.13  knitr_1.38      stringr_1.4.0  
-#> [13] xfun_0.30       digest_0.6.29   rlang_1.0.2     evaluate_0.15
+#>  [1] compiler_4.2.1  magrittr_2.0.3  fastmap_1.1.0   cli_3.4.1      
+#>  [5] tools_4.2.1     htmltools_0.5.3 rstudioapi_0.14 yaml_2.3.6     
+#>  [9] stringi_1.7.8   rmarkdown_2.17  knitr_1.40      stringr_1.4.1  
+#> [13] xfun_0.34       digest_0.6.30   rlang_1.0.6     evaluate_0.17
 ```
