@@ -127,9 +127,9 @@ using KEGGREST package via the internet and reformat the database, respectively.
 
 The arguments of `collect_KEGG()` are `organism` and `categories`.
 Here, `organism` must obey the naming rule of
-[KEGG](http://rest.kegg.jp/list/organism) and `categories` must be one of
-`"pathway"` and `"module"` in the current version
-(see `KEGGREST` function `listDatabases()`).
+[KEGG](http://rest.kegg.jp/list/organism)
+(see `KEGGREST` function `listDatabases()`) and `categories` must be one of
+`"pathway"`, `"module"`, and `"drug"` (only for human) in the current version.
 ```{r, eval = FALSE}
 # Human
 dict_KEGG <- collect_KEGG(organism = "hsa", categories = c("pathway"))
@@ -140,6 +140,13 @@ human_KEGG <- format_KEGG(dict = list(pathway = dict_KEGG[["pathway"]][["success
 dict_KEGG <- collect_KEGG(organism = "mmu", categories = c("pathway"))
 mouse_KEGG <- format_KEGG(dict = list(pathway = dict_KEGG[["pathway"]][["success"]]),
                           orgdb = org.Mm.eg.db::org.Mm.eg.db)
+
+# Human (additional)
+dict_KEGG_drug <- collect_KEGG(organism = "hsa", categories = c("drug"))
+human_KEGG_drug <- format_KEGG(dict = list(drug = dict_KEGG_drug[["drug"]][["success"]]),
+                               orgdb = org.Hs.eg.db::org.Hs.eg.db)
+# Save data.
+# save(human_KEGG_drug, file = "genes2bioterm/20221102_human_KEGG_drug.rda")
 ```
 Note `collect_KEGG()` uses `KEGGREST` function `keggGet()`,
 which may produce both successful and unsuccessful results.
