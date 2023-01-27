@@ -1,7 +1,7 @@
 ASURATDB
 ================
 Keita Iida
-2022-11-04
+2023-01-27
 
 -   <a href="#1-installations" id="toc-1-installations">1 Installations</a>
 -   <a href="#2-collect-disease-ontology-database-for-human-cells"
@@ -19,6 +19,11 @@ Keita Iida
 -   <a href="#6-collect-msigdb-for-human-cells"
     id="toc-6-collect-msigdb-for-human-cells">6 Collect MSigDB for human
     cells</a>
+    -   <a href="#61-hallmark-gene-sets-in-msigdb"
+        id="toc-61-hallmark-gene-sets-in-msigdb">6.1 Hallmark gene sets in
+        MSigDB</a>
+    -   <a href="#62-cell-types-in-msigdb" id="toc-62-cell-types-in-msigdb">6.2
+        Cell types in MSigDB</a>
 -   <a href="#7-collect-cellmarker-for-human-cells"
     id="toc-7-collect-cellmarker-for-human-cells">7 Collect CellMarker for
     human cells</a>
@@ -65,6 +70,8 @@ dict_DO <- enrichDO(unlist(DO2EG), ont = "DO", pvalueCutoff = 1,
                     qvalueCutoff = 1, readable = FALSE)
 human_DO <- format_DO(dict = dict_DO@result, all_geneIDs = dict_DO@gene,
                       orgdb = org.Hs.eg.db::org.Hs.eg.db)
+# Save data.
+# save(human_DO, file = "genes2bioterm/20201213_human_DO.rda")
 ```
 
 The data were stored in the following repositories:
@@ -88,10 +95,14 @@ registered for “type B pancreatic cell” with ID “CL:0000169”.
 # Human
 dict_CO <- collect_CO(orgdb = org.Hs.eg.db::org.Hs.eg.db)
 human_CO <- format_CO(dict = dict_CO, orgdb = org.Hs.eg.db::org.Hs.eg.db)
+# Save data.
+# save(human_CO, file = "genes2bioterm/20201213_human_CO.rda")
 
 # Mouse
 dict_CO <- collect_CO(orgdb = org.Mm.eg.db::org.Mm.eg.db)
 mouse_CO <- format_CO(dict = dict_CO, orgdb = org.Mm.eg.db::org.Mm.eg.db)
+# Save data.
+# save(mouse_CO, file = "genes2bioterm/20201211_mouse_CO.rda")
 ```
 
 The data were stored in the following repositories:
@@ -119,6 +130,8 @@ for(i in seq_along(onts)){
   mat <- human_GO$similarity_matrix[[onts[i]]][ids, ids]
   human_GO_red$similarity_matrix[[onts[i]]] <- mat
 }
+# Save data.
+# save(human_GO_red, file = "genes2bioterm/20201213_human_GO_red.rda")
 
 # Mouse
 dict_GO <- collect_GO(orgdb = org.Mm.eg.db::org.Mm.eg.db)
@@ -131,6 +144,8 @@ for(i in seq_along(onts)){
   mat <- mouse_GO$similarity_matrix[[onts[i]]][ids, ids]
   mouse_GO_red$similarity_matrix[[onts[i]]] <- mat
 }
+# Save data.
+# save(mouse_GO_red, file = "genes2bioterm/20201211_mouse_GO_red.rda")
 ```
 
 The data were stored in the following repositories:
@@ -157,13 +172,17 @@ The arguments of `collect_KEGG()` are `organism` and `categories`. Here,
 dict_KEGG <- collect_KEGG(organism = "hsa", categories = c("pathway"))
 human_KEGG <- format_KEGG(dict = list(pathway = dict_KEGG[["pathway"]][["success"]]),
                           orgdb = org.Hs.eg.db::org.Hs.eg.db)
+# Save data.
+# save(human_KEGG, file = "genes2bioterm/20201213_human_KEGG.rda")
 
 # Mouse
 dict_KEGG <- collect_KEGG(organism = "mmu", categories = c("pathway"))
 mouse_KEGG <- format_KEGG(dict = list(pathway = dict_KEGG[["pathway"]][["success"]]),
                           orgdb = org.Mm.eg.db::org.Mm.eg.db)
+# Save data.
+# save(mouse_KEGG, file = "genes2bioterm/20201211_mouse_KEGG.rda")
 
-# Human (additional)
+# Human (drug)
 dict_KEGG_drug <- collect_KEGG(organism = "hsa", categories = c("drug"))
 human_KEGG_drug <- format_KEGG(dict = list(drug = dict_KEGG_drug[["drug"]][["success"]]),
                                orgdb = org.Hs.eg.db::org.Hs.eg.db)
@@ -181,6 +200,54 @@ in the following repositories:
 <br>
 
 # 6 Collect MSigDB for human cells
+
+## 6.1 Hallmark gene sets in MSigDB
+
+Load databases, where species can be searched by
+`msigdbr::msigdbr_species()`.
+
+``` r
+dbtable <- msigdbr::msigdbr(species = "Homo sapiens")
+```
+
+Select gene set collections.
+
+``` r
+dbtable <- dbtable[which(dbtable$gs_cat == "H"), ]
+```
+
+Reformat the database.
+
+``` r
+dbtable_gsetID <- dbtable[, which(colnames(dbtable) %in% c("gs_name", "gs_id"))]
+dbtable_gsetID <- unique(dbtable_gsetID)
+dbtable_geneID <- split(x = dbtable$human_entrez_gene, f = dbtable$gs_name)
+dbtable_symbol <- split(x = dbtable$gene_symbol, f = dbtable$gs_name)
+stopifnot(identical(length(dbtable_geneID), length(dbtable_symbol)))
+
+res <- c("ID", "Description", "Count", "Gene", "GeneID", "IC")
+res <- data.frame(matrix(ncol = 6, nrow = 0, dimnames = list(NULL, res)))
+for(i in 1:length(dbtable_geneID)){
+  res <- rbind(res, data.frame(
+    ID = dbtable_gsetID$gs_id[i],
+    Description = dbtable_gsetID$gs_name[i],
+    IC = NA,
+    Count = length(dbtable_geneID[[i]]),
+    Gene = paste(dbtable_symbol[[i]], collapse = "/"),
+    GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
+}
+human_MSigDB_Hallmark <- list(hallmark = res)
+# Save data.
+# save(human_MSigDB_Hallmark, file = "genes2bioterm/20230127_human_MSigDB_Hallmark.rda")
+```
+
+The data were stored in the following repositories:
+
+-   [Github ASURATDB](https://github.com/keita-iida/ASURATDB)
+
+<br>
+
+## 6.2 Cell types in MSigDB
 
 Load databases.
 
@@ -239,6 +306,8 @@ for(i in 1:length(dbtable_geneID)){
     GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
 }
 human_MSigDB <- list(cell = res)
+# Save data.
+# save(human_MSigDB, file = "genes2bioterm/20220308_human_MSigDB.rda")
 ```
 
 The data were stored in the following repositories:
@@ -307,6 +376,8 @@ for(i in 1:length(dbtable_geneID)){
     GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
 }
 human_CellMarker <- list(cell = res)
+# Save data.
+# save(human_CellMarker, file = "genes2bioterm/20220308_human_CellMarker.rda")
 ```
 
 The data were stored in the following repositories:
@@ -330,11 +401,6 @@ load(url(paste0(urlpath, "20220308_human_MSigDB.rda?raw=true")))
 res <- rbind(human_CO[["cell"]], human_MSigDB[["cell"]])
 human_CB <- list(cell = res)
 ```
-
-The data were stored in the following repositories:
-
--   [DOI:10.6084/m9.figshare.19102598](https://figshare.com/s/0599d2de970c2deb675c)
--   [Github ASURATDB](https://github.com/keita-iida/ASURATDB)
 
 <br>
 
@@ -412,8 +478,8 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] compiler_4.2.1  magrittr_2.0.3  fastmap_1.1.0   cli_3.4.1      
-#>  [5] tools_4.2.1     htmltools_0.5.3 rstudioapi_0.14 yaml_2.3.6     
-#>  [9] stringi_1.7.8   rmarkdown_2.17  knitr_1.40      stringr_1.4.1  
-#> [13] xfun_0.34       digest_0.6.30   rlang_1.0.6     evaluate_0.17
+#>  [1] compiler_4.2.1  fastmap_1.1.0   cli_3.6.0       tools_4.2.1    
+#>  [5] htmltools_0.5.4 rstudioapi_0.14 yaml_2.3.7      rmarkdown_2.20 
+#>  [9] knitr_1.42      xfun_0.36       digest_0.6.31   rlang_1.0.6    
+#> [13] evaluate_0.20
 ```

@@ -3,15 +3,15 @@ title: "ASURATDB"
 author: "Keita Iida"
 date: "`r Sys.Date()`"
 output:
-  rmarkdown::html_document:
-    toc: true
-    toc_depth: 2
-    number_section: true
-    toc_float: TRUE
-  # rmarkdown::github_document:
+  # rmarkdown::html_document:
   #   toc: true
   #   toc_depth: 2
   #   number_section: true
+  #   toc_float: TRUE
+  rmarkdown::github_document:
+    toc: true
+    toc_depth: 2
+    number_section: true
 vignette: >
   %\VignetteIndexEntry{ASURATDB}
   %\VignetteEngine{knitr::rmarkdown}
@@ -50,6 +50,8 @@ dict_DO <- enrichDO(unlist(DO2EG), ont = "DO", pvalueCutoff = 1,
                     qvalueCutoff = 1, readable = FALSE)
 human_DO <- format_DO(dict = dict_DO@result, all_geneIDs = dict_DO@gene,
                       orgdb = org.Hs.eg.db::org.Hs.eg.db)
+# Save data.
+# save(human_DO, file = "genes2bioterm/20201213_human_DO.rda")
 ```
 The data were stored in the following repositories:
 
@@ -73,10 +75,14 @@ were not registered for "type B pancreatic cell" with ID "CL:0000169".
 # Human
 dict_CO <- collect_CO(orgdb = org.Hs.eg.db::org.Hs.eg.db)
 human_CO <- format_CO(dict = dict_CO, orgdb = org.Hs.eg.db::org.Hs.eg.db)
+# Save data.
+# save(human_CO, file = "genes2bioterm/20201213_human_CO.rda")
 
 # Mouse
 dict_CO <- collect_CO(orgdb = org.Mm.eg.db::org.Mm.eg.db)
 mouse_CO <- format_CO(dict = dict_CO, orgdb = org.Mm.eg.db::org.Mm.eg.db)
+# Save data.
+# save(mouse_CO, file = "genes2bioterm/20201211_mouse_CO.rda")
 ```
 The data were stored in the following repositories:
 
@@ -103,6 +109,8 @@ for(i in seq_along(onts)){
   mat <- human_GO$similarity_matrix[[onts[i]]][ids, ids]
   human_GO_red$similarity_matrix[[onts[i]]] <- mat
 }
+# Save data.
+# save(human_GO_red, file = "genes2bioterm/20201213_human_GO_red.rda")
 
 # Mouse
 dict_GO <- collect_GO(orgdb = org.Mm.eg.db::org.Mm.eg.db)
@@ -115,6 +123,8 @@ for(i in seq_along(onts)){
   mat <- mouse_GO$similarity_matrix[[onts[i]]][ids, ids]
   mouse_GO_red$similarity_matrix[[onts[i]]] <- mat
 }
+# Save data.
+# save(mouse_GO_red, file = "genes2bioterm/20201211_mouse_GO_red.rda")
 ```
 The data were stored in the following repositories:
 
@@ -139,13 +149,17 @@ Here, `organism` must obey the naming rule of
 dict_KEGG <- collect_KEGG(organism = "hsa", categories = c("pathway"))
 human_KEGG <- format_KEGG(dict = list(pathway = dict_KEGG[["pathway"]][["success"]]),
                           orgdb = org.Hs.eg.db::org.Hs.eg.db)
+# Save data.
+# save(human_KEGG, file = "genes2bioterm/20201213_human_KEGG.rda")
 
 # Mouse
 dict_KEGG <- collect_KEGG(organism = "mmu", categories = c("pathway"))
 mouse_KEGG <- format_KEGG(dict = list(pathway = dict_KEGG[["pathway"]][["success"]]),
                           orgdb = org.Mm.eg.db::org.Mm.eg.db)
+# Save data.
+# save(mouse_KEGG, file = "genes2bioterm/20201211_mouse_KEGG.rda")
 
-# Human (additional)
+# Human (drug)
 dict_KEGG_drug <- collect_KEGG(organism = "hsa", categories = c("drug"))
 human_KEGG_drug <- format_KEGG(dict = list(drug = dict_KEGG_drug[["drug"]][["success"]]),
                                orgdb = org.Hs.eg.db::org.Hs.eg.db)
@@ -164,6 +178,49 @@ The data were stored in the following repositories:
 <br>
 
 # Collect MSigDB for human cells
+## Hallmark gene sets in MSigDB
+Load databases, where species can be searched by `msigdbr::msigdbr_species()`.
+```{r, eval = FALSE}
+dbtable <- msigdbr::msigdbr(species = "Homo sapiens")
+```
+
+Select gene set collections.
+```{r, eval = FALSE}
+dbtable <- dbtable[which(dbtable$gs_cat == "H"), ]
+```
+
+Reformat the database.
+```{r, eval = FALSE}
+dbtable_gsetID <- dbtable[, which(colnames(dbtable) %in% c("gs_name", "gs_id"))]
+dbtable_gsetID <- unique(dbtable_gsetID)
+dbtable_geneID <- split(x = dbtable$human_entrez_gene, f = dbtable$gs_name)
+dbtable_symbol <- split(x = dbtable$gene_symbol, f = dbtable$gs_name)
+stopifnot(identical(length(dbtable_geneID), length(dbtable_symbol)))
+
+res <- c("ID", "Description", "Count", "Gene", "GeneID", "IC")
+res <- data.frame(matrix(ncol = 6, nrow = 0, dimnames = list(NULL, res)))
+for(i in 1:length(dbtable_geneID)){
+  res <- rbind(res, data.frame(
+    ID = dbtable_gsetID$gs_id[i],
+    Description = dbtable_gsetID$gs_name[i],
+    IC = NA,
+    Count = length(dbtable_geneID[[i]]),
+    Gene = paste(dbtable_symbol[[i]], collapse = "/"),
+    GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
+}
+human_MSigDB_Hallmark <- list(hallmark = res)
+# Save data.
+# save(human_MSigDB_Hallmark, file = "genes2bioterm/20230127_human_MSigDB_Hallmark.rda")
+```
+The data were stored in the following repositories:
+
+* [Github ASURATDB](https://github.com/keita-iida/ASURATDB)
+
+
+
+<br>
+
+## Cell types in MSigDB
 Load databases.
 ```{r, eval = FALSE}
 dbtable <- clustermole::clustermole_markers()
@@ -218,6 +275,8 @@ for(i in 1:length(dbtable_geneID)){
     GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
 }
 human_MSigDB <- list(cell = res)
+# Save data.
+# save(human_MSigDB, file = "genes2bioterm/20220308_human_MSigDB.rda")
 ```
 The data were stored in the following repositories:
 
@@ -283,6 +342,8 @@ for(i in 1:length(dbtable_geneID)){
     GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
 }
 human_CellMarker <- list(cell = res)
+# Save data.
+# save(human_CellMarker, file = "genes2bioterm/20220308_human_CellMarker.rda")
 ```
 The data were stored in the following repositories:
 
@@ -304,10 +365,6 @@ load(url(paste0(urlpath, "20220308_human_MSigDB.rda?raw=true")))
 res <- rbind(human_CO[["cell"]], human_MSigDB[["cell"]])
 human_CB <- list(cell = res)
 ```
-The data were stored in the following repositories:
-
-* [DOI:10.6084/m9.figshare.19102598](https://figshare.com/s/0599d2de970c2deb675c)
-* [Github ASURATDB](https://github.com/keita-iida/ASURATDB)
 
 
 

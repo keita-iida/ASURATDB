@@ -35,6 +35,7 @@ Imports:
     KEGGREST
 Suggests:
     clustermole (>= 1.1.0),
+    msigdbr,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
