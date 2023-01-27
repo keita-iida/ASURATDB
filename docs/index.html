@@ -1659,11 +1659,9 @@ human cells</h1>
 <div id="hallmark-gene-sets-in-msigdb" class="section level2" number="6.1">
 <h2><span class="header-section-number">6.1</span> Hallmark gene sets in
 MSigDB</h2>
-<p>Load databases, where species can be searched by
-<code>msigdbr::msigdbr_species()</code>.</p>
-<pre class="r"><code>dbtable &lt;- msigdbr::msigdbr(species = &quot;Homo sapiens&quot;)</code></pre>
-<p>Select gene set collections.</p>
-<pre class="r"><code>dbtable &lt;- dbtable[which(dbtable$gs_cat == &quot;H&quot;), ]</code></pre>
+<p>Load databases, where category is “H” (hallmark gene sets) and
+species is human (cf. <code>msigdbr::msigdbr_species()</code>).</p>
+<pre class="r"><code>dbtable &lt;- msigdbr::msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;H&quot;)</code></pre>
 <p>Reformat the database.</p>
 <pre class="r"><code>dbtable_gsetID &lt;- dbtable[, which(colnames(dbtable) %in% c(&quot;gs_name&quot;, &quot;gs_id&quot;))]
 dbtable_gsetID &lt;- unique(dbtable_gsetID)

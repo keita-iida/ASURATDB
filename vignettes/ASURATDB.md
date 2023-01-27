@@ -203,17 +203,11 @@ in the following repositories:
 
 ## 6.1 Hallmark gene sets in MSigDB
 
-Load databases, where species can be searched by
-`msigdbr::msigdbr_species()`.
+Load databases, where category is “H” (hallmark gene sets) and species
+is human (cf. `msigdbr::msigdbr_species()`).
 
 ``` r
-dbtable <- msigdbr::msigdbr(species = "Homo sapiens")
-```
-
-Select gene set collections.
-
-``` r
-dbtable <- dbtable[which(dbtable$gs_cat == "H"), ]
+dbtable <- msigdbr::msigdbr(species = "Homo sapiens", category = "H")
 ```
 
 Reformat the database.
