@@ -21,10 +21,13 @@ Keita Iida
     cells</a>
     -   <a href="#61-h-hallmark-gene-sets" id="toc-61-h-hallmark-gene-sets">6.1
         H: hallmark gene sets</a>
-    -   <a href="#62-c3-regulatory-target-gene-sets-tftgtrd"
-        id="toc-62-c3-regulatory-target-gene-sets-tftgtrd">6.2 C3: regulatory
+    -   <a href="#62-c2-curated-gene-sets-biocarta-subset-of-cp"
+        id="toc-62-c2-curated-gene-sets-biocarta-subset-of-cp">6.2 C2: curated
+        gene sets (BioCarta subset of CP)</a>
+    -   <a href="#63-c3-regulatory-target-gene-sets-tftgtrd"
+        id="toc-63-c3-regulatory-target-gene-sets-tftgtrd">6.3 C3: regulatory
         target gene sets (TFT:GTRD)</a>
-    -   <a href="#63-cell-types-in-msigdb" id="toc-63-cell-types-in-msigdb">6.3
+    -   <a href="#64-cell-types-in-msigdb" id="toc-64-cell-types-in-msigdb">6.4
         Cell types in MSigDB</a>
 -   <a href="#7-collect-cellmarker-for-human-cells"
     id="toc-7-collect-cellmarker-for-human-cells">7 Collect CellMarker for
@@ -243,7 +246,48 @@ The data were stored in the following repositories:
 
 <br>
 
-## 6.2 C3: regulatory target gene sets (TFT:GTRD)
+## 6.2 C2: curated gene sets (BioCarta subset of CP)
+
+Load databases, where category is “C3” (regulatory target gene sets) and
+species is human (cf. `msigdbr::msigdbr_species()`).
+
+``` r
+dbtable <- msigdbr::msigdbr(species = "Homo sapiens", category = "C2")
+dbtable <- dbtable[which(dbtable$gs_subcat == "CP:BIOCARTA"), ]
+```
+
+Reformat the database.
+
+``` r
+dbtable_gsetID <- dbtable[, which(colnames(dbtable) %in% c("gs_name", "gs_id"))]
+dbtable_gsetID <- unique(dbtable_gsetID)
+dbtable_geneID <- split(x = dbtable$human_entrez_gene, f = dbtable$gs_name)
+dbtable_symbol <- split(x = dbtable$gene_symbol, f = dbtable$gs_name)
+stopifnot(identical(length(dbtable_geneID), length(dbtable_symbol)))
+
+res <- c("ID", "Description", "Count", "Gene", "GeneID", "IC")
+res <- data.frame(matrix(ncol = 6, nrow = 0, dimnames = list(NULL, res)))
+for(i in 1:length(dbtable_geneID)){
+  res <- rbind(res, data.frame(
+    ID = dbtable_gsetID$gs_id[i],
+    Description = dbtable_gsetID$gs_name[i],
+    IC = NA,
+    Count = length(dbtable_geneID[[i]]),
+    Gene = paste(dbtable_symbol[[i]], collapse = "/"),
+    GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
+}
+human_MSigDB_BIOCARTA <- list(BIOCARTA = res)
+# Save data.
+# save(human_MSigDB_BIOCARTA, file = "genes2bioterm/20230211_human_MSigDB_BIOCARTA.rda")
+```
+
+The data were stored in the following repositories:
+
+-   [Github ASURATDB](https://github.com/keita-iida/ASURATDB)
+
+<br>
+
+## 6.3 C3: regulatory target gene sets (TFT:GTRD)
 
 Load databases, where category is “C3” (regulatory target gene sets) and
 species is human (cf. `msigdbr::msigdbr_species()`).
@@ -284,7 +328,7 @@ The data were stored in the following repositories:
 
 <br>
 
-## 6.3 Cell types in MSigDB
+## 6.4 Cell types in MSigDB
 
 Load databases.
 
