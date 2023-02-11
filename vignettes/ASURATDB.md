@@ -1,7 +1,7 @@
 ASURATDB
 ================
 Keita Iida
-2023-01-27
+2023-02-11
 
 -   <a href="#1-installations" id="toc-1-installations">1 Installations</a>
 -   <a href="#2-collect-disease-ontology-database-for-human-cells"
@@ -19,10 +19,12 @@ Keita Iida
 -   <a href="#6-collect-msigdb-for-human-cells"
     id="toc-6-collect-msigdb-for-human-cells">6 Collect MSigDB for human
     cells</a>
-    -   <a href="#61-hallmark-gene-sets-in-msigdb"
-        id="toc-61-hallmark-gene-sets-in-msigdb">6.1 Hallmark gene sets in
-        MSigDB</a>
-    -   <a href="#62-cell-types-in-msigdb" id="toc-62-cell-types-in-msigdb">6.2
+    -   <a href="#61-h-hallmark-gene-sets" id="toc-61-h-hallmark-gene-sets">6.1
+        H: hallmark gene sets</a>
+    -   <a href="#62-c3-regulatory-target-gene-sets-tftgtrd"
+        id="toc-62-c3-regulatory-target-gene-sets-tftgtrd">6.2 C3: regulatory
+        target gene sets (TFT:GTRD)</a>
+    -   <a href="#63-cell-types-in-msigdb" id="toc-63-cell-types-in-msigdb">6.3
         Cell types in MSigDB</a>
 -   <a href="#7-collect-cellmarker-for-human-cells"
     id="toc-7-collect-cellmarker-for-human-cells">7 Collect CellMarker for
@@ -201,7 +203,7 @@ in the following repositories:
 
 # 6 Collect MSigDB for human cells
 
-## 6.1 Hallmark gene sets in MSigDB
+## 6.1 H: hallmark gene sets
 
 Load databases, where category is “H” (hallmark gene sets) and species
 is human (cf. `msigdbr::msigdbr_species()`).
@@ -241,7 +243,48 @@ The data were stored in the following repositories:
 
 <br>
 
-## 6.2 Cell types in MSigDB
+## 6.2 C3: regulatory target gene sets (TFT:GTRD)
+
+Load databases, where category is “C3” (regulatory target gene sets) and
+species is human (cf. `msigdbr::msigdbr_species()`).
+
+``` r
+dbtable <- msigdbr::msigdbr(species = "Homo sapiens", category = "C3")
+dbtable <- dbtable[which(dbtable$gs_subcat == "TFT:GTRD"), ]
+```
+
+Reformat the database.
+
+``` r
+dbtable_gsetID <- dbtable[, which(colnames(dbtable) %in% c("gs_name", "gs_id"))]
+dbtable_gsetID <- unique(dbtable_gsetID)
+dbtable_geneID <- split(x = dbtable$human_entrez_gene, f = dbtable$gs_name)
+dbtable_symbol <- split(x = dbtable$gene_symbol, f = dbtable$gs_name)
+stopifnot(identical(length(dbtable_geneID), length(dbtable_symbol)))
+
+res <- c("ID", "Description", "Count", "Gene", "GeneID", "IC")
+res <- data.frame(matrix(ncol = 6, nrow = 0, dimnames = list(NULL, res)))
+for(i in 1:length(dbtable_geneID)){
+  res <- rbind(res, data.frame(
+    ID = dbtable_gsetID$gs_id[i],
+    Description = dbtable_gsetID$gs_name[i],
+    IC = NA,
+    Count = length(dbtable_geneID[[i]]),
+    Gene = paste(dbtable_symbol[[i]], collapse = "/"),
+    GeneID = paste(dbtable_geneID[[i]], collapse = "/")))
+}
+human_MSigDB_GTRD <- list(GTRD = res)
+# Save data.
+# save(human_MSigDB_GTRD, file = "genes2bioterm/20230211_human_MSigDB_GTRD.rda")
+```
+
+The data were stored in the following repositories:
+
+-   [Github ASURATDB](https://github.com/keita-iida/ASURATDB)
+
+<br>
+
+## 6.3 Cell types in MSigDB
 
 Load databases.
 
@@ -474,6 +517,6 @@ sessionInfo()
 #> loaded via a namespace (and not attached):
 #>  [1] compiler_4.2.1  fastmap_1.1.0   cli_3.6.0       tools_4.2.1    
 #>  [5] htmltools_0.5.4 rstudioapi_0.14 yaml_2.3.7      rmarkdown_2.20 
-#>  [9] knitr_1.42      xfun_0.36       digest_0.6.31   rlang_1.0.6    
+#>  [9] knitr_1.42      xfun_0.37       digest_0.6.31   rlang_1.0.6    
 #> [13] evaluate_0.20
 ```

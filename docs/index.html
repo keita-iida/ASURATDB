@@ -11,7 +11,7 @@
 
 <meta name="author" content="Keita Iida" />
 
-<meta name="date" content="2023-01-27" />
+<meta name="date" content="2023-02-11" />
 
 <title>ASURATDB</title>
 
@@ -1505,7 +1505,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">ASURATDB</h1>
 <h4 class="author">Keita Iida</h4>
-<h4 class="date">2023-01-27</h4>
+<h4 class="date">2023-02-11</h4>
 
 </div>
 
@@ -1656,9 +1656,9 @@ ASURATDB</a></li>
 <div id="collect-msigdb-for-human-cells" class="section level1" number="6">
 <h1><span class="header-section-number">6</span> Collect MSigDB for
 human cells</h1>
-<div id="hallmark-gene-sets-in-msigdb" class="section level2" number="6.1">
-<h2><span class="header-section-number">6.1</span> Hallmark gene sets in
-MSigDB</h2>
+<div id="h-hallmark-gene-sets" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> H: hallmark gene
+sets</h2>
 <p>Load databases, where category is “H” (hallmark gene sets) and
 species is human (cf. <code>msigdbr::msigdbr_species()</code>).</p>
 <pre class="r"><code>dbtable &lt;- msigdbr::msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;H&quot;)</code></pre>
@@ -1690,8 +1690,43 @@ ASURATDB</a></li>
 </ul>
 <p><br></p>
 </div>
-<div id="cell-types-in-msigdb" class="section level2" number="6.2">
-<h2><span class="header-section-number">6.2</span> Cell types in
+<div id="c3-regulatory-target-gene-sets-tftgtrd" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> C3: regulatory target
+gene sets (TFT:GTRD)</h2>
+<p>Load databases, where category is “C3” (regulatory target gene sets)
+and species is human (cf. <code>msigdbr::msigdbr_species()</code>).</p>
+<pre class="r"><code>dbtable &lt;- msigdbr::msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C3&quot;)
+dbtable &lt;- dbtable[which(dbtable$gs_subcat == &quot;TFT:GTRD&quot;), ]</code></pre>
+<p>Reformat the database.</p>
+<pre class="r"><code>dbtable_gsetID &lt;- dbtable[, which(colnames(dbtable) %in% c(&quot;gs_name&quot;, &quot;gs_id&quot;))]
+dbtable_gsetID &lt;- unique(dbtable_gsetID)
+dbtable_geneID &lt;- split(x = dbtable$human_entrez_gene, f = dbtable$gs_name)
+dbtable_symbol &lt;- split(x = dbtable$gene_symbol, f = dbtable$gs_name)
+stopifnot(identical(length(dbtable_geneID), length(dbtable_symbol)))
+
+res &lt;- c(&quot;ID&quot;, &quot;Description&quot;, &quot;Count&quot;, &quot;Gene&quot;, &quot;GeneID&quot;, &quot;IC&quot;)
+res &lt;- data.frame(matrix(ncol = 6, nrow = 0, dimnames = list(NULL, res)))
+for(i in 1:length(dbtable_geneID)){
+  res &lt;- rbind(res, data.frame(
+    ID = dbtable_gsetID$gs_id[i],
+    Description = dbtable_gsetID$gs_name[i],
+    IC = NA,
+    Count = length(dbtable_geneID[[i]]),
+    Gene = paste(dbtable_symbol[[i]], collapse = &quot;/&quot;),
+    GeneID = paste(dbtable_geneID[[i]], collapse = &quot;/&quot;)))
+}
+human_MSigDB_GTRD &lt;- list(GTRD = res)
+# Save data.
+# save(human_MSigDB_GTRD, file = &quot;genes2bioterm/20230211_human_MSigDB_GTRD.rda&quot;)</code></pre>
+<p>The data were stored in the following repositories:</p>
+<ul>
+<li><a href="https://github.com/keita-iida/ASURATDB">Github
+ASURATDB</a></li>
+</ul>
+<p><br></p>
+</div>
+<div id="cell-types-in-msigdb" class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> Cell types in
 MSigDB</h2>
 <p>Load databases.</p>
 <pre class="r"><code>dbtable &lt;- clustermole::clustermole_markers()</code></pre>
@@ -1879,7 +1914,7 @@ information</h1>
 #&gt;  [1] digest_0.6.31   R6_2.5.1        jsonlite_1.8.4  evaluate_0.20  
 #&gt;  [5] cachem_1.0.6    rlang_1.0.6     cli_3.6.0       rstudioapi_0.14
 #&gt;  [9] jquerylib_0.1.4 bslib_0.4.2     rmarkdown_2.20  tools_4.2.1    
-#&gt; [13] xfun_0.36       yaml_2.3.7      fastmap_1.1.0   compiler_4.2.1 
+#&gt; [13] xfun_0.37       yaml_2.3.7      fastmap_1.1.0   compiler_4.2.1 
 #&gt; [17] htmltools_0.5.4 knitr_1.42      sass_0.4.5</code></pre>
 </div>
 
